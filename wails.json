@@ -1,0 +1,12 @@
+{
+  "name": "Clipboard",
+  "outputfilename": "clipboard",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "JJ-H",
+    "email": "1916787042@qq.com"
+  }
+} 
