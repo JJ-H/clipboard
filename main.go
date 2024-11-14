@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"log"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 //go:embed all:frontend/dist
@@ -31,8 +33,12 @@ func main() {
 			WindowIsTranslucent:  true,
 			WebviewIsTransparent: true,
 		},
-		// 添加窗口居中设置
-		StartHidden: true, // 先隐藏窗口
+		OnBeforeClose: func(ctx context.Context) bool {
+			// 返回 true 阻止窗口关闭，改为最小化
+			runtime.WindowMinimise(ctx)
+			return true
+		},
+		StartHidden: true,
 	})
 
 	if err != nil {

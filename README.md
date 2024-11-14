@@ -29,7 +29,9 @@
 ## 快捷键
 
 - `Alt + C` 或 `Shift + Alt + V`: 显示/隐藏主窗口
+- `Command + W` (macOS) 或 `Ctrl + W`: 最小化窗口
 - `/`: 快速搜索
+- `Space`: 聚焦到第一个卡片
 - `←/→`: 在历史记录中导航
 - `Enter`: 复制选中内容
 - `Delete/Backspace`: 删除选中记录

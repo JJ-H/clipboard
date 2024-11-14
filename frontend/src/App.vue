@@ -156,6 +156,9 @@
                 class="max-history-input" 
               />
             </el-form-item>
+            <el-form-item label="复制后自动隐藏">
+              <el-switch v-model="autoHide" />
+            </el-form-item>
           </el-form>
           <template #footer>
             <span class="dialog-footer">
@@ -260,6 +263,7 @@ export default {
         tags: []
       },
       currentTagIndex: -1,
+      autoHide: false,
     }
   },
   computed: {
@@ -343,7 +347,7 @@ export default {
     window.addEventListener('keydown', this.handleGlobalKeydown)
   },
   beforeUnmount() {
-    // 移除全局键盘事件监��
+    // 移除全局键盘事件监
     window.removeEventListener('keydown', this.handleGlobalKeydown)
   },
   watch: {
@@ -380,28 +384,25 @@ export default {
       this.config = await window.go.main.App.GetConfig()
       this.maxHistory = this.config.maxHistory
       this.tags = this.config.tags || []
+      this.autoHide = this.config.autoHide || false
     },
     async copyContent(item) {
       try {
-        // 先复制内容到剪贴板
         await window.go.main.App.SaveToClipboard(item.content)
-        
-        // 移动到最前面
         await window.go.main.App.MoveItemToFront(item.id)
-        
-        // 重新加载历史记录
         await this.loadHistory()
-        
-        // 保持选中状态在第一
         this.selectedIndex = 0
         
-        // 显示复制成功提示
         this.$message({
           type: 'success',
           duration: 1000,
           showClose: false,
           customClass: 'copy-success-message'
         })
+        
+        if (this.autoHide) {
+          window.go.main.App.MinimizeWindow()
+        }
         
       } catch (err) {
         this.$message.error('操作失败：' + err)
@@ -415,7 +416,7 @@ export default {
     },
     async saveSettings() {
       try {
-        await window.go.main.App.UpdateConfig(this.maxHistory)
+        await window.go.main.App.UpdateConfig(this.maxHistory, this.autoHide)
         this.$message.success('设置已保存')
         this.settingsVisible = false
       } catch (err) {
@@ -593,6 +594,26 @@ export default {
     handleGlobalKeydown(event) {
       // 如果当前有输入框在焦点中，不处理快捷键
       if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        return
+      }
+      
+      // Command + W 最小化窗口 (macOS)
+      if ((event.metaKey || event.ctrlKey) && event.key === 'w') {
+        event.preventDefault()
+        window.go.main.App.MinimizeWindow()
+        return
+      }
+      
+      // 空格键聚焦到第一个卡片
+      if (event.key === ' ' || event.key === 'Spacebar') {  // 兼容不同浏览器
+        event.preventDefault()
+        if (this.filteredHistory.length > 0) {
+          this.selectedIndex = 0
+          this.$nextTick(() => {
+            this.scrollToSelectedItem()
+            this.$refs.itemsContainer?.focus()
+          })
+        }
         return
       }
       
@@ -1512,5 +1533,10 @@ html, body {
   margin: 0 !important;
   font-size: 20px !important;
   color: #67c23a !important;
+}
+
+/* 添加开关样式 */
+.el-form-item {
+  margin-bottom: 20px !important;
 }
 </style> 

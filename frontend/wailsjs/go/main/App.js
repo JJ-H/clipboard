@@ -22,6 +22,10 @@ export function GetHistory() {
   return window['go']['main']['App']['GetHistory']();
 }
 
+export function MinimizeWindow() {
+  return window['go']['main']['App']['MinimizeWindow']();
+}
+
 export function MoveItemToFront(arg1) {
   return window['go']['main']['App']['MoveItemToFront'](arg1);
 }
@@ -34,8 +38,8 @@ export function ToggleWindow() {
   return window['go']['main']['App']['ToggleWindow']();
 }
 
-export function UpdateConfig(arg1) {
-  return window['go']['main']['App']['UpdateConfig'](arg1);
+export function UpdateConfig(arg1, arg2) {
+  return window['go']['main']['App']['UpdateConfig'](arg1, arg2);
 }
 
 export function UpdateItemTag(arg1, arg2) {

@@ -58,6 +58,7 @@ export namespace main {
 	export class Config {
 	    maxHistory: number;
 	    tags: Tag[];
+	    autoHide: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);
@@ -67,6 +68,7 @@ export namespace main {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.maxHistory = source["maxHistory"];
 	        this.tags = this.convertValues(source["tags"], Tag);
+	        this.autoHide = source["autoHide"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

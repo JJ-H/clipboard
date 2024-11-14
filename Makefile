@@ -41,6 +41,12 @@ build-mac:
 build-linux:
 	wails build -platform linux/amd64
 
+# 生成 macOS DMG 安装包
+build-mac-dmg:
+	wails build -platform darwin/universal
+	ls -la build/bin
+	hdiutil create -volname "Smart Clipboard" -srcfolder "build/bin/Smart Clipboard.app" -ov -format UDZO "Smart Clipboard.dmg"
+
 # 帮助信息
 help:
 	@echo "可用的命令:"
@@ -52,4 +58,5 @@ help:
 	@echo "  make test         - 运行测试"
 	@echo "  make build-windows - 构建 Windows 版本"
 	@echo "  make build-mac    - 构建 macOS 版本"
-	@echo "  make build-linux  - 构建 Linux 版本" 
+	@echo "  make build-linux  - 构建 Linux 版本"
+	@echo "  make build-mac-dmg - 构建 macOS DMG 安装包"

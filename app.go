@@ -36,6 +36,7 @@ type ClipboardItem struct {
 type Config struct {
 	MaxHistory int   `json:"maxHistory"`
 	Tags       []Tag `json:"tags"`
+	AutoHide   bool  `json:"autoHide"`
 }
 
 // App struct
@@ -74,6 +75,12 @@ func (a *App) startup(ctx context.Context) {
 	// 窗口居中显示
 	runtime.WindowCenter(ctx)
 	runtime.WindowShow(ctx)
+
+	// 设置窗口关闭事件处理
+	runtime.EventsOn(ctx, "window-close-requested", func(optionalData ...interface{}) {
+		// 阻止窗口关闭，改为最小化
+		runtime.WindowMinimise(ctx)
+	})
 
 	// 启动剪贴板监听
 	go a.watchClipboard()
@@ -207,12 +214,13 @@ func (a *App) SaveToClipboard(content string) error {
 }
 
 // UpdateConfig 更新配置
-func (a *App) UpdateConfig(maxHistory int) error {
+func (a *App) UpdateConfig(maxHistory int, autoHide bool) error {
 	// 添加最大值验证
 	if maxHistory > 50 {
 		return fmt.Errorf("最大历史记录数不能超过 50")
 	}
 	a.config.MaxHistory = maxHistory
+	a.config.AutoHide = autoHide
 	return a.saveConfig()
 }
 
@@ -343,7 +351,7 @@ func (a *App) DeleteTag(tagID string) error {
 		return fmt.Errorf("tag not found")
 	}
 
-	// 删除带有该标签的所有历史记录
+	// 删除带有该标签的所有史记录
 	var newHistory []ClipboardItem
 	for _, item := range a.history {
 		if item.TagID != tagID {
@@ -458,4 +466,9 @@ func (a *App) cleanup() {
 			}
 		}
 	}()
+}
+
+// MinimizeWindow 最小化窗口
+func (a *App) MinimizeWindow() {
+	runtime.WindowMinimise(a.ctx)
 }

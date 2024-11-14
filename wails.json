@@ -1,12 +1,27 @@
 {
-  "name": "Clipboard",
-  "outputfilename": "clipboard",
+  "name": "Smart Clipboard",
+  "outputfilename": "Smart Clipboard",
   "frontend:install": "npm install",
   "frontend:build": "npm run build",
   "frontend:dev:watcher": "npm run dev",
   "frontend:dev:serverUrl": "auto",
   "author": {
-    "name": "JJ-H",
-    "email": "1916787042@qq.com"
+    "name": "Your Name",
+    "email": "your.email@example.com"
+  },
+  "info": {
+    "companyName": "Your Company",
+    "productName": "Smart Clipboard",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright © 2024",
+    "comments": "Modern clipboard manager"
+  },
+  "mac": {
+    "entitlements": "build/darwin/entitlements.plist",
+    "applicationCategory": "public.app-category.utilities",
+    "electronParams": {
+      "appId": "com.yourcompany.smartclipboard",
+      "icon": "build/appicon.png"
+    }
   }
 } 
