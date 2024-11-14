@@ -16,6 +16,8 @@ export function MinimizeWindow():Promise<void>;
 
 export function MoveItemToFront(arg1:string):Promise<void>;
 
+export function QuitApp():Promise<void>;
+
 export function SaveToClipboard(arg1:string):Promise<void>;
 
 export function ToggleWindow():Promise<void>;

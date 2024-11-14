@@ -472,3 +472,11 @@ func (a *App) cleanup() {
 func (a *App) MinimizeWindow() {
 	runtime.WindowMinimise(a.ctx)
 }
+
+// QuitApp 直接退出应用
+func (a *App) QuitApp() {
+	quitMutex.Lock()
+	isQuitting = true
+	quitMutex.Unlock()
+	runtime.Quit(a.ctx)
+}

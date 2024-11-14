@@ -30,6 +30,10 @@ export function MoveItemToFront(arg1) {
   return window['go']['main']['App']['MoveItemToFront'](arg1);
 }
 
+export function QuitApp() {
+  return window['go']['main']['App']['QuitApp']();
+}
+
 export function SaveToClipboard(arg1) {
   return window['go']['main']['App']['SaveToClipboard'](arg1);
 }

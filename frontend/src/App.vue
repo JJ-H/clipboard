@@ -597,6 +597,13 @@ export default {
         return
       }
       
+      // Command + Q 退出应用 (macOS)
+      if ((event.metaKey || event.ctrlKey) && event.key === 'q') {
+        event.preventDefault()
+        window.go.main.App.QuitApp()
+        return
+      }
+      
       // Command + W 最小化窗口 (macOS)
       if ((event.metaKey || event.ctrlKey) && event.key === 'w') {
         event.preventDefault()
