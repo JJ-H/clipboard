@@ -22,6 +22,10 @@ export function GetHistory() {
   return window['go']['main']['App']['GetHistory']();
 }
 
+export function MoveItemToFront(arg1) {
+  return window['go']['main']['App']['MoveItemToFront'](arg1);
+}
+
 export function SaveToClipboard(arg1) {
   return window['go']['main']['App']['SaveToClipboard'](arg1);
 }

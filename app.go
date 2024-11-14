@@ -45,6 +45,7 @@ type App struct {
 	config  Config
 	stop    chan bool
 	mutex   sync.Mutex
+	skipNextWatch bool
 }
 
 // NewApp creates a new App application struct
@@ -108,15 +109,16 @@ func (a *App) watchClipboard() {
 		case <-a.stop:
 			return
 		case data := <-textChan:
-			if data != nil {
+			if data != nil && !a.skipNextWatch {
 				content := string(data)
 				if content != lastContent && content != "" {
 					lastContent = content
 					a.saveClipboardItem(content, "text")
 				}
 			}
+			a.skipNextWatch = false
 		case data := <-imageChan:
-			if data != nil {
+			if data != nil && !a.skipNextWatch {
 				// 检查图片大小
 				if len(data) > 10*1024*1024 { // 10MB 限制
 					runtime.EventsEmit(a.ctx, "clipboardError", "图片大小超过限制(10MB)")
@@ -130,6 +132,7 @@ func (a *App) watchClipboard() {
 					a.saveClipboardItem(imgContent, "image")
 				}
 			}
+			a.skipNextWatch = false
 		}
 	}
 }
@@ -175,6 +178,7 @@ func (a *App) GetHistory() []ClipboardItem {
 
 // SaveToClipboard 保存内容到剪贴板并记录历史
 func (a *App) SaveToClipboard(content string) error {
+	a.skipNextWatch = true
 	// 如果是图片内容
 	if len(content) > 23 && content[:22] == "data:image/png;base64," {
 		imgData, err := base64.StdEncoding.DecodeString(content[22:])
@@ -380,4 +384,38 @@ func (a *App) UpdateTagsOrder(tagIDs []string) error {
 
 	a.config.Tags = newTags
 	return a.saveConfig()
+}
+
+// MoveItemToFront 将指定项目移动到最前面
+func (a *App) MoveItemToFront(id string) error {
+	a.mutex.Lock()
+	defer a.mutex.Unlock()
+
+	// 查找指定项目
+	var targetItem ClipboardItem
+	var targetIndex int = -1
+	
+	for i, item := range a.history {
+		if item.ID == id {
+			targetItem = item
+			targetIndex = i
+			break
+		}
+	}
+
+	if targetIndex == -1 {
+		return fmt.Errorf("item not found")
+	}
+
+	// 如果已经在最前面，不需要移动
+	if targetIndex == 0 {
+		return nil
+	}
+
+	// 移除原位置的项目
+	a.history = append(a.history[:targetIndex], a.history[targetIndex+1:]...)
+	// 添加到最前面
+	a.history = append([]ClipboardItem{targetItem}, a.history...)
+
+	return a.saveHistory()
 }

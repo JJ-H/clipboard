@@ -373,30 +373,25 @@ export default {
     },
     async copyContent(item) {
       try {
+        // 先复制内容到剪贴板
         await window.go.main.App.SaveToClipboard(item.content)
+        
+        // 移动到最前面
+        await window.go.main.App.MoveItemToFront(item.id)
+        
+        // 重新加载历史记录
+        await this.loadHistory()
+        
+        // 保持选中状态在第一个
+        this.selectedIndex = 0
+        
+        // 显示复制成功提示
         this.$message({
           type: 'success',
           duration: 1000,
           showClose: false,
           customClass: 'copy-success-message'
         })
-        
-        // 只有当卡片不属于任何标签时才删除
-        if (!item.tagId) {
-          const currentIndex = this.selectedIndex
-          await window.go.main.App.DeleteHistoryItem(item.id)
-          await this.loadHistory()
-          
-          if (this.history.length > 0) {
-            if (currentIndex >= this.history.length) {
-              this.selectedIndex = this.history.length - 1
-            } else {
-              this.selectedIndex = currentIndex
-            }
-          } else {
-            this.selectedIndex = -1
-          }
-        }
         
       } catch (err) {
         this.$message.error('操作失败：' + err)
