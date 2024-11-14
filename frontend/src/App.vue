@@ -401,7 +401,7 @@ export default {
         })
         
         if (this.autoHide) {
-          window.go.main.App.MinimizeWindow()
+          window.go.main.App.HideWindow()
         }
         
       } catch (err) {
