@@ -10,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/atotto/clipboard"
 	hook "github.com/robotn/gohook"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	xclip "golang.design/x/clipboard"
@@ -176,9 +175,10 @@ func (a *App) GetHistory() []ClipboardItem {
 	return a.history
 }
 
-// SaveToClipboard 保存内容到剪贴板并记录历史
+// SaveToClipboard 保存内容到剪贴板
 func (a *App) SaveToClipboard(content string) error {
 	a.skipNextWatch = true
+	
 	// 如果是图片内容
 	if len(content) > 23 && content[:22] == "data:image/png;base64," {
 		imgData, err := base64.StdEncoding.DecodeString(content[22:])
@@ -190,7 +190,8 @@ func (a *App) SaveToClipboard(content string) error {
 	}
 
 	// 如果是文本内容
-	return clipboard.WriteAll(content)
+	xclip.Write(xclip.FmtText, []byte(content))
+	return nil
 }
 
 // UpdateConfig 更新配置

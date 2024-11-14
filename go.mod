@@ -5,7 +5,6 @@ go 1.21
 toolchain go1.22.0
 
 require (
-	github.com/atotto/clipboard v0.1.4
 	github.com/robotn/gohook v0.41.0
 	github.com/wailsapp/wails/v2 v2.9.2
 	golang.design/x/clipboard v0.7.0
