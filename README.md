@@ -34,19 +34,78 @@
 - `Enter`: 复制选中内容
 - `Delete/Backspace`: 删除选中记录
 
-### 环境要求
+## 环境要求
 
+### 基础环境
 - Go 1.18+
 - Node.js 16+
 - Wails v2
 
-### 安装指南
+### Windows 依赖
+- gcc (可通过安装 MinGW-w64 或 TDM-GCC 获得)
+- WebView2 运行时
 
+### macOS 依赖
+- Xcode Command Line Tools
+- App Store 开发者账号（如需打包发布）
+
+### Linux 依赖
+- gcc
+- gtk3
+- webkit2gtk3
+- 基本构建工具
+
+#### Ubuntu/Debian
+```bash
+sudo apt install build-essential libgtk-3-dev libwebkit2gtk-4.0-dev
 ```
+
+#### Fedora
+```bash
+sudo dnf install gcc gtk3-devel webkit2gtk3-devel
+```
+
+#### Arch Linux
+```bash
+sudo pacman -S base-devel gtk3 webkit2gtk
+```
+
+## 安装指南
+
+1. 克隆仓库
+```bash
 git clone https://github.com/JJ-H/clipboard.git
-
-cd cliboard
-
-make build
-
 ```
+
+2. 进入项目目录
+```bash
+cd clipboard
+```
+
+3. 安装依赖并构建
+```bash
+# 安装前端依赖
+make install
+
+# 构建应用
+make build
+```
+
+## 开发指南
+
+```bash
+# 开发模式
+make dev
+
+# 构建特定平台版本
+make build-windows  # Windows
+make build-mac      # macOS
+make build-linux    # Linux
+
+# 清理构建文件
+make clean
+```
+
+## 许可证
+
+MIT License

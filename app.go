@@ -16,14 +16,14 @@ import (
 	xclip "golang.design/x/clipboard"
 )
 
-// Tag 表示标签
+// Tag
 type Tag struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Color string `json:"color"`
 }
 
-// ClipboardItem 表示一条剪贴板记录
+// ClipboardItem
 type ClipboardItem struct {
 	ID        string    `json:"id"`
 	Content   string    `json:"content"`
@@ -32,7 +32,7 @@ type ClipboardItem struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-// Config 应用配置
+// Config
 type Config struct {
 	MaxHistory int   `json:"maxHistory"`
 	Tags       []Tag `json:"tags"`
@@ -67,7 +67,7 @@ func (a *App) startup(ctx context.Context) {
 	// 初始化剪贴板
 	err := xclip.Init()
 	if err != nil {
-		fmt.Printf("初始化剪贴板失败: %v\n", err)
+		fmt.Printf("initial clipboard failed: %v\n", err)
 	}
 
 	// 窗口居中显示
@@ -134,7 +134,7 @@ func (a *App) watchClipboard() {
 	}
 }
 
-// saveClipboardItem 保存剪贴板内容
+// saveClipboardItem
 func (a *App) saveClipboardItem(content string, itemType string) {
 	item := ClipboardItem{
 		ID:        fmt.Sprintf("%d", time.Now().UnixNano()),
@@ -153,7 +153,7 @@ func (a *App) saveClipboardItem(content string, itemType string) {
 	runtime.EventsEmit(a.ctx, "historyUpdated")
 }
 
-// ToggleWindow 切换窗口显示状态
+// ToggleWindow
 func (a *App) ToggleWindow() {
 	visible := runtime.WindowIsNormal(a.ctx)
 	if visible {

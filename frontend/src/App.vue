@@ -213,7 +213,7 @@
 
 <script>
 import { Setting, WarningFilled, Plus, Close, Search, Edit, Delete, DocumentCopy } from '@element-plus/icons-vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useDark } from '@vueuse/core'
 
 // 检测系统主题
@@ -303,9 +303,15 @@ export default {
     
     window.runtime.EventsOn("toggleWindow", () => {
       window.go.main.App.ToggleWindow()
+      // 当窗口显示时，检查并选中第一个卡片
+      this.$nextTick(() => {
+        if (this.filteredHistory.length > 0 && this.selectedIndex === -1) {
+          this.selectedIndex = 0
+        }
+      })
     })
     
-    // 添加历史记录更新事件监���
+    // 添加历史记录更新事件监听
     window.runtime.EventsOn("historyUpdated", () => {
       this.loadHistory()
     })
@@ -319,14 +325,42 @@ export default {
       })
     })
   },
-  mounted() {
-    this.$refs.itemsContainer.focus()
-    // 添加全局键盘事件监听
-    window.addEventListener('keydown', this.handleGlobalKeydown)
+  async mounted() {
+    // 初始化时，如果有卡片则选中第一个并聚焦容器
+    if (this.filteredHistory.length > 0) {
+      this.selectedIndex = 0
+      this.$nextTick(() => {
+        this.$refs.itemsContainer?.focus()
+      })
+    }
   },
   beforeUnmount() {
     // 移除全局键盘事件监听
     window.removeEventListener('keydown', this.handleGlobalKeydown)
+  },
+  watch: {
+    // 监听筛选后的历史记录变化
+    filteredHistory: {
+      handler(newHistory) {
+        // 如果当前没有选中项，且有历史记录，则选中第一个并聚焦容器
+        if (this.selectedIndex === -1 && newHistory.length > 0) {
+          this.selectedIndex = 0
+          this.$nextTick(() => {
+            this.$refs.itemsContainer?.focus()
+          })
+        }
+        // 如果选中项超出范围，重置选中状态
+        else if (this.selectedIndex >= newHistory.length) {
+          this.selectedIndex = newHistory.length > 0 ? 0 : -1
+          if (this.selectedIndex >= 0) {
+            this.$nextTick(() => {
+              this.$refs.itemsContainer?.focus()
+            })
+          }
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
     async loadHistory() {
@@ -389,7 +423,9 @@ export default {
     },
     selectItem(index) {
       this.selectedIndex = index
+      // 选中时确保容器获得焦点
       this.$nextTick(() => {
+        this.$refs.itemsContainer?.focus()
         this.scrollToSelectedItem()
       })
     },
@@ -582,7 +618,7 @@ export default {
     },
     async saveTagEdit() {
       if (!this.editingTag.name.trim()) {
-        this.$message.warning('请输入标签名称')
+        this.$message.warning('输入标签名称')
         return
       }
       try {
@@ -1264,7 +1300,7 @@ html, body {
   font-size: 14px;
 }
 
-/* 暗黑模式配 */
+/* 黑模式配 */
 @media (prefers-color-scheme: dark) {
   .tag-popup-menu {
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
