@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -30,7 +29,7 @@ type ClipboardItem struct {
 	Type      string    `json:"type"`
 	TagID     string    `json:"tagId"`
 	Timestamp time.Time `json:"timestamp"`
-	size      int      // 添加大小字段，但不序列化
+	size      int       // 添加大小字段，但不序列化
 }
 
 // Config
@@ -42,12 +41,12 @@ type Config struct {
 
 // App struct
 type App struct {
-	ctx     context.Context
-	history []ClipboardItem
-	config  Config
-	stop    chan bool
-	mutex   sync.Mutex
-	skipNextWatch bool
+	ctx             context.Context
+	history         []ClipboardItem
+	config          Config
+	stop            chan bool
+	mutex           sync.Mutex
+	skipNextWatch   bool
 	isWindowVisible bool
 }
 
@@ -179,16 +178,13 @@ func (a *App) saveClipboardItem(content string, itemType string) {
 
 // ToggleWindow 切换窗口显示状态
 func (a *App) ToggleWindow() {
-	log.Println("ToggleWindow called, current visible state:", a.isWindowVisible)
-	
+
 	if a.isWindowVisible {
 		// 如果窗口当前可见，则隐藏
-		log.Println("Hiding window")
 		runtime.WindowHide(a.ctx)
 		a.isWindowVisible = false
 	} else {
 		// 如果窗口当前不可见，则显示
-		log.Println("Showing window")
 		runtime.WindowShow(a.ctx)
 		runtime.WindowSetAlwaysOnTop(a.ctx, true)
 		runtime.WindowSetAlwaysOnTop(a.ctx, false)
@@ -205,7 +201,7 @@ func (a *App) GetHistory() []ClipboardItem {
 // SaveToClipboard 保存内容到剪贴板
 func (a *App) SaveToClipboard(content string) error {
 	a.skipNextWatch = true
-	
+
 	// 如果是图片内容
 	if len(content) > 23 && content[:22] == "data:image/png;base64," {
 		imgData, err := base64.StdEncoding.DecodeString(content[22:])
@@ -423,7 +419,7 @@ func (a *App) MoveItemToFront(id string) error {
 	// 查找指定项目
 	var targetItem ClipboardItem
 	var targetIndex int = -1
-	
+
 	for i, item := range a.history {
 		if item.ID == id {
 			targetItem = item
@@ -483,7 +479,6 @@ func (a *App) MinimizeWindow() {
 
 // QuitApp 直接退出应用
 func (a *App) QuitApp() {
-	log.Println("QuitApp called")
 	quitMutex.Lock()
 	isQuitting = true
 	quitMutex.Unlock()
@@ -492,14 +487,12 @@ func (a *App) QuitApp() {
 
 // HideWindow 隐藏窗口
 func (a *App) HideWindow() {
-	log.Println("HideWindow called")
 	runtime.WindowHide(a.ctx)
 	a.isWindowVisible = false
 }
 
 // ShowWindow 显示窗口
 func (a *App) ShowWindow() {
-	log.Println("ShowWindow called")
 	runtime.WindowShow(a.ctx)
 	runtime.WindowSetAlwaysOnTop(a.ctx, true)
 	runtime.WindowSetAlwaysOnTop(a.ctx, false)
