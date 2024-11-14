@@ -876,53 +876,28 @@ html, body {
   height: 180px;
   margin-right: 20px;
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateY(0);
-  will-change: transform, box-shadow;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: var(--card-bg);
   position: relative;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-  background-clip: padding-box;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transform: translateY(0);
 }
 
 .clipboard-item:hover {
-  border-color: var(--border-color);
-  box-shadow: 0 6px 16px 0 rgba(149, 157, 165, 0.08);
-  background-color: var(--card-bg);
-  transform: translateY(-4px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
 }
 
 .clipboard-item.selected {
-  border-color: #9b59b6;
-  box-shadow: 0 0 0 2px #9b59b6, 0 8px 20px 0 rgba(155, 89, 182, 0.2);
   transform: translateY(-6px);
-  z-index: 1;
-}
-
-/* 暗黑模式下的选中效果 */
-@media (prefers-color-scheme: dark) {
-  .clipboard-item {
-    border-color: var(--border-color);
-  }
-  
-  .clipboard-item:hover {
-    border-color: #4a4a4a;
-    box-shadow: 0 6px 16px 0 var(--card-hover-shadow);
-    background-color: var(--card-bg);
-    transform: translateY(-4px);
-  }
-  
-  .clipboard-item.selected {
-    border-color: #9b59b6;
-    box-shadow: 0 0 0 2px #9b59b6, 0 8px 20px 0 rgba(155, 89, 182, 0.3);
-    transform: translateY(-6px);
-  }
+  border-color: #9b59b6;
+  box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.2), 0 8px 24px rgba(155, 89, 182, 0.15);
 }
 
 .clipboard-image {
@@ -1142,22 +1117,17 @@ html, body {
 .tag-item {
   display: flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 12px;
   background-color: transparent;
   cursor: pointer;
   user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   transition: all 0.2s ease;
   border: 1px solid var(--border-color);
-  font-size: 13px;
+  font-size: 12px;
+  letter-spacing: 0.3px;
   color: var(--text-color);
   opacity: 0.8;
-  position: relative;
-  z-index: 1;
-  background-clip: padding-box;
 }
 
 .tag-item:hover {
@@ -1173,11 +1143,11 @@ html, body {
 }
 
 .tag-dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  margin-right: 6px;
-  transition: all 0.2s ease;
+  margin-right: 8px;
+  transition: transform 0.2s ease;
 }
 
 .tag-item:hover .tag-dot {
@@ -1430,8 +1400,15 @@ html, body {
   align-items: center;
   justify-content: center;
   color: var(--text-color);
-  opacity: 0.5;
+  opacity: 0.4;
   user-select: none;
+  transform: scale(0.95);
+  transition: all 0.3s ease;
+}
+
+.empty-state:hover {
+  opacity: 0.6;
+  transform: scale(1);
 }
 
 .empty-icon {
@@ -1545,5 +1522,18 @@ html, body {
 /* 添加开关样式 */
 .el-form-item {
   margin-bottom: 20px !important;
+}
+
+.clipboard-items::-webkit-scrollbar {
+  height: 6px;
+}
+
+.clipboard-items::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.clipboard-items::-webkit-scrollbar-track {
+  background: transparent;
 }
 </style> 
