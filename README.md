@@ -28,8 +28,9 @@
 
 ## 快捷键
 
-- `Alt + C` 或 `Shift + Alt + V`: 显示/隐藏主窗口
+- `Alt + C` 或 `Shift + Ctrl + V`: 显示/隐藏主窗口
 - `Command + W` (macOS) 或 `Ctrl + W`: 最小化窗口
+- `Command + Q` (macOS) 或 `Ctrl + Q`: 退出应用
 - `/`: 快速搜索
 - `Space`: 聚焦到第一个卡片
 - `←/→`: 在历史记录中导航
