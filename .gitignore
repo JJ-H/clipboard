@@ -1,0 +1,43 @@
+# Binaries and build outputs
+build/
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Wails
+frontend/dist/
+frontend/node_modules/
+wails.exe
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Go specific
+*.test
+*.out
+go.work
+
+# Frontend dependencies
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Application specific
+clipboard/
+*.log
+
+# System specific
+.DS_Store
+Thumbs.db 
+
+*.dmg
