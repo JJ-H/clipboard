@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -47,6 +48,7 @@ type App struct {
 	stop    chan bool
 	mutex   sync.Mutex
 	skipNextWatch bool
+	isWindowVisible bool
 }
 
 // NewApp creates a new App application struct
@@ -65,6 +67,7 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	a.loadConfig()
 	a.loadHistory()
+	a.isWindowVisible = true
 
 	// 初始化剪贴板
 	err := xclip.Init()
@@ -174,18 +177,23 @@ func (a *App) saveClipboardItem(content string, itemType string) {
 	runtime.EventsEmit(a.ctx, "historyUpdated")
 }
 
-// ToggleWindow
+// ToggleWindow 切换窗口显示状态
 func (a *App) ToggleWindow() {
-	visible := runtime.WindowIsNormal(a.ctx)
-	if visible {
-		runtime.WindowMinimise(a.ctx)
+	log.Println("ToggleWindow called, current visible state:", a.isWindowVisible)
+	
+	if a.isWindowVisible {
+		// 如果窗口当前可见，则隐藏
+		log.Println("Hiding window")
+		runtime.WindowHide(a.ctx)
+		a.isWindowVisible = false
 	} else {
-		// 先显示窗口，再取消最小化
+		// 如果窗口当前不可见，则显示
+		log.Println("Showing window")
 		runtime.WindowShow(a.ctx)
-		runtime.WindowUnminimise(a.ctx)
-		// 将窗口置于最前
 		runtime.WindowSetAlwaysOnTop(a.ctx, true)
 		runtime.WindowSetAlwaysOnTop(a.ctx, false)
+		runtime.WindowCenter(a.ctx)
+		a.isWindowVisible = true
 	}
 }
 
@@ -475,8 +483,26 @@ func (a *App) MinimizeWindow() {
 
 // QuitApp 直接退出应用
 func (a *App) QuitApp() {
+	log.Println("QuitApp called")
 	quitMutex.Lock()
 	isQuitting = true
 	quitMutex.Unlock()
 	runtime.Quit(a.ctx)
+}
+
+// HideWindow 隐藏窗口
+func (a *App) HideWindow() {
+	log.Println("HideWindow called")
+	runtime.WindowHide(a.ctx)
+	a.isWindowVisible = false
+}
+
+// ShowWindow 显示窗口
+func (a *App) ShowWindow() {
+	log.Println("ShowWindow called")
+	runtime.WindowShow(a.ctx)
+	runtime.WindowSetAlwaysOnTop(a.ctx, true)
+	runtime.WindowSetAlwaysOnTop(a.ctx, false)
+	runtime.WindowCenter(a.ctx)
+	a.isWindowVisible = true
 }

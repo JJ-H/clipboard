@@ -12,6 +12,8 @@ export function GetConfig():Promise<main.Config>;
 
 export function GetHistory():Promise<Array<main.ClipboardItem>>;
 
+export function HideWindow():Promise<void>;
+
 export function MinimizeWindow():Promise<void>;
 
 export function MoveItemToFront(arg1:string):Promise<void>;
@@ -19,6 +21,8 @@ export function MoveItemToFront(arg1:string):Promise<void>;
 export function QuitApp():Promise<void>;
 
 export function SaveToClipboard(arg1:string):Promise<void>;
+
+export function ShowWindow():Promise<void>;
 
 export function ToggleWindow():Promise<void>;
 

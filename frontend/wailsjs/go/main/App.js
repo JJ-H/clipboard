@@ -22,6 +22,10 @@ export function GetHistory() {
   return window['go']['main']['App']['GetHistory']();
 }
 
+export function HideWindow() {
+  return window['go']['main']['App']['HideWindow']();
+}
+
 export function MinimizeWindow() {
   return window['go']['main']['App']['MinimizeWindow']();
 }
@@ -36,6 +40,10 @@ export function QuitApp() {
 
 export function SaveToClipboard(arg1) {
   return window['go']['main']['App']['SaveToClipboard'](arg1);
+}
+
+export function ShowWindow() {
+  return window['go']['main']['App']['ShowWindow']();
 }
 
 export function ToggleWindow() {

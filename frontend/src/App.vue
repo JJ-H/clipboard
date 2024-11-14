@@ -604,10 +604,10 @@ export default {
         return
       }
       
-      // Command + W 最小化窗口 (macOS)
+      // Command + W 隐藏窗口 (macOS)
       if ((event.metaKey || event.ctrlKey) && event.key === 'w') {
         event.preventDefault()
-        window.go.main.App.MinimizeWindow()
+        window.go.main.App.HideWindow()
         return
       }
       

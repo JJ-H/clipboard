@@ -40,17 +40,27 @@ func main() {
 			WebviewIsTransparent: true,
 		},
 		OnBeforeClose: func(ctx context.Context) bool {
-			quitMutex.Lock()
-			defer quitMutex.Unlock()
+			// 添加日志打印
+			log.Println("OnBeforeClose triggered")
 			
-			// 如果是通过 QuitApp 方法退出，允许关闭
+			// 如果是通过 QuitApp 方法退出，直接退出
 			if isQuitting {
+				log.Println("Quitting via QuitApp")
 				return false
 			}
 			
-			// 否则最小化窗口
-			runtime.WindowMinimise(ctx)
-			return true
+			// 如果窗口可见，则隐藏窗口
+			if runtime.WindowIsNormal(ctx) {
+				log.Println("Window is normal, hiding window")
+				runtime.WindowHide(ctx)
+				return true
+			}
+			
+			// 如果窗口已经隐藏（从 Dock 菜单退出），直接退出
+			log.Println("Window is hidden, quitting app")
+			isQuitting = true
+			runtime.Quit(ctx)
+			return false
 		},
 		StartHidden: true,
 		Mac: &mac.Options{
