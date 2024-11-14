@@ -258,7 +258,8 @@ export default {
       config: {
         maxHistory: 50,
         tags: []
-      }
+      },
+      currentTagIndex: -1,
     }
   },
   computed: {
@@ -295,6 +296,9 @@ export default {
         return '该标签下暂无内容'
       }
       return '暂无复制记录'
+    },
+    allTags() {
+      return [{ id: null, name: '全部' }, ...this.tags]
     }
   },
   async created() {
@@ -339,7 +343,7 @@ export default {
     window.addEventListener('keydown', this.handleGlobalKeydown)
   },
   beforeUnmount() {
-    // 移除全局键盘事件监听
+    // 移除全局键盘事件监��
     window.removeEventListener('keydown', this.handleGlobalKeydown)
   },
   watch: {
@@ -592,6 +596,20 @@ export default {
         return
       }
       
+      // Tab 键切换标签
+      if (event.key === 'Tab') {
+        event.preventDefault() // 阻止默认的 Tab 行为
+        
+        if (event.shiftKey) {
+          // Shift + Tab 向左切换
+          this.switchToPreviousTag()
+        } else {
+          // Tab 向右切换
+          this.switchToNextTag()
+        }
+        return
+      }
+      
       // 按下 / 键时打开并聚焦搜索框
       if (event.key === '/') {
         event.preventDefault() // 阻止 / 字符输入到搜索框
@@ -690,6 +708,44 @@ export default {
       this.$nextTick(() => {
         this.$refs.searchInput?.focus()
       })
+    },
+    // 切换到下一个标签
+    switchToNextTag() {
+      const currentIndex = this.allTags.findIndex(tag => tag.id === this.currentTag)
+      const nextIndex = (currentIndex + 1) % this.allTags.length
+      this.currentTag = this.allTags[nextIndex].id
+      this.selectedIndex = 0  // 重置选中的卡片到第一个
+      
+      // 确保标签可见
+      this.$nextTick(() => {
+        this.scrollTagIntoView(nextIndex)
+      })
+    },
+    
+    // 切换到上一个标签
+    switchToPreviousTag() {
+      const currentIndex = this.allTags.findIndex(tag => tag.id === this.currentTag)
+      const prevIndex = currentIndex <= 0 ? this.allTags.length - 1 : currentIndex - 1
+      this.currentTag = this.allTags[prevIndex].id
+      this.selectedIndex = 0  // 重置选中的卡片到第一个
+      
+      // 确保标签可见
+      this.$nextTick(() => {
+        this.scrollTagIntoView(prevIndex)
+      })
+    },
+    
+    // 滚动标签到可见区域
+    scrollTagIntoView(index) {
+      const tagsContainer = this.$el.querySelector('.tags-list')
+      const tagElements = tagsContainer.children
+      if (tagElements[index]) {
+        tagElements[index].scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest'
+        })
+      }
     }
   }
 }
