@@ -40,21 +40,21 @@ func main() {
 			WebviewIsTransparent: true,
 		},
 		OnBeforeClose: func(ctx context.Context) bool {
-
 			// 如果是通过 QuitApp 方法退出，直接退出
 			if isQuitting {
 				return false
 			}
 
-			// 如果窗口可见，则隐藏窗口
-			if runtime.WindowIsNormal(ctx) {
-				//log.Println("Window is normal, hiding window")
+			// log.Println("OnBeforeClose", app.isWindowVisible)
+
+			// 如果是点击窗口关闭按钮，则隐藏窗口
+			if app.isWindowVisible {
 				runtime.WindowHide(ctx)
+				app.isWindowVisible = false // 更新窗口状态
 				return true
 			}
 
-			// 如果窗口已经隐藏（从 Dock 菜单退出），直接退出
-			//log.Println("Window is hidden, quitting app")
+			// 其他情况（从 Dock 菜单退出），直接退出
 			isQuitting = true
 			runtime.Quit(ctx)
 			return false
