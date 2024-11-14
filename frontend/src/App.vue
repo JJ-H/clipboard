@@ -299,7 +299,7 @@ export default {
   async created() {
     await this.loadHistory()
     await this.loadConfig()
-    setInterval(this.loadHistory, 1000)
+    setInterval(this.loadHistory, 3000)
     
     window.runtime.EventsOn("toggleWindow", () => {
       window.go.main.App.ToggleWindow()
@@ -333,6 +333,9 @@ export default {
         this.$refs.itemsContainer?.focus()
       })
     }
+    
+    // 添加全局键盘事件监听
+    window.addEventListener('keydown', this.handleGlobalKeydown)
   },
   beforeUnmount() {
     // 移除全局键盘事件监听
@@ -364,7 +367,9 @@ export default {
   },
   methods: {
     async loadHistory() {
-      this.history = await window.go.main.App.GetHistory()
+      if (document.visibilityState === 'visible') {
+        this.history = await window.go.main.App.GetHistory()
+      }
     },
     async loadConfig() {
       this.config = await window.go.main.App.GetConfig()
@@ -585,7 +590,7 @@ export default {
         event.preventDefault() // 阻止 / 字符输入到搜索框
         this.showSearch = true
         this.$nextTick(() => {
-          this.$refs.searchInput.focus()
+          this.$refs.searchInput?.focus()
         })
       }
     },

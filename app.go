@@ -29,6 +29,7 @@ type ClipboardItem struct {
 	Type      string    `json:"type"`
 	TagID     string    `json:"tagId"`
 	Timestamp time.Time `json:"timestamp"`
+	size      int      // 添加大小字段，但不序列化
 }
 
 // Config
@@ -112,7 +113,7 @@ func (a *App) watchClipboard() {
 				content := string(data)
 				if content != lastContent && content != "" {
 					lastContent = content
-					a.saveClipboardItem(content, "text")
+					go a.saveClipboardItem(content, "text")
 				}
 			}
 			a.skipNextWatch = false
@@ -128,7 +129,7 @@ func (a *App) watchClipboard() {
 				imgContent := "data:image/png;base64," + imgBase64
 				if imgContent != lastContent {
 					lastContent = imgContent
-					a.saveClipboardItem(imgContent, "image")
+					go a.saveClipboardItem(imgContent, "image")
 				}
 			}
 			a.skipNextWatch = false
@@ -138,6 +139,15 @@ func (a *App) watchClipboard() {
 
 // saveClipboardItem
 func (a *App) saveClipboardItem(content string, itemType string) {
+	// 如果是图片，进行压缩处理
+	if itemType == "image" {
+		// 限制base64字符串的最大长度（约1MB）
+		if len(content) > 1024*1024 {
+			// 简单的裁剪，实际项目中可以使用图片压缩库
+			content = content[:1024*1024]
+		}
+	}
+
 	item := ClipboardItem{
 		ID:        fmt.Sprintf("%d", time.Now().UnixNano()),
 		Content:   content,
@@ -145,13 +155,15 @@ func (a *App) saveClipboardItem(content string, itemType string) {
 		Timestamp: time.Now(),
 	}
 
+	a.mutex.Lock()
 	a.history = append([]ClipboardItem{item}, a.history...)
 	if len(a.history) > a.config.MaxHistory {
 		a.history = a.history[:a.config.MaxHistory]
 	}
-	a.saveHistory()
+	a.mutex.Unlock()
 
-	// 发送更新通知
+	// 异步保存
+	go a.saveHistory()
 	runtime.EventsEmit(a.ctx, "historyUpdated")
 }
 
@@ -419,4 +431,31 @@ func (a *App) MoveItemToFront(id string) error {
 	a.history = append([]ClipboardItem{targetItem}, a.history...)
 
 	return a.saveHistory()
+}
+
+func (a *App) cleanup() {
+	// 定期清理过期的历史记录
+	ticker := time.NewTicker(10 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-a.stop:
+				ticker.Stop()
+				return
+			case <-ticker.C:
+				a.mutex.Lock()
+				// 清理超过一定时间的记录
+				now := time.Now()
+				var newHistory []ClipboardItem
+				for _, item := range a.history {
+					if now.Sub(item.Timestamp) < 24*time.Hour {
+						newHistory = append(newHistory, item)
+					}
+				}
+				a.history = newHistory
+				a.mutex.Unlock()
+				a.saveHistory()
+			}
+		}
+	}()
 }
