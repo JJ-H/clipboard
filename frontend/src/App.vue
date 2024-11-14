@@ -54,8 +54,9 @@
                   placeholder="搜索内容"
                   class="search-input"
                   ref="searchInput"
-                  @blur="handleSearchBlur"
-                  @keydown.esc="clearSearch"
+                  @keydown.esc="handleSearchEsc"
+                  @keydown.enter="handleSearchEnter"
+                  @input="handleSearchInput"
                 >
                   <template #prefix>
                     <el-icon><Search /></el-icon>
@@ -342,7 +343,7 @@ export default {
     window.removeEventListener('keydown', this.handleGlobalKeydown)
   },
   watch: {
-    // 监听筛选后的历史记录变化
+    // 监听筛选后历史记录变化
     filteredHistory: {
       handler(newHistory) {
         // 如果当前没有选中项，且有历史记录，则选中第一个并聚焦容器
@@ -387,7 +388,7 @@ export default {
         // 重新加载历史记录
         await this.loadHistory()
         
-        // 保持选中状态在第一个
+        // 保持选中状态在第一
         this.selectedIndex = 0
         
         // 显示复制成功提示
@@ -451,6 +452,9 @@ export default {
         // 向左滚动时，将选中项放在容器左侧
         container.scrollLeft = Math.max(0, itemLeft - margin)
       }
+
+      // 确保容器保持焦点
+      container.focus()
     },
     async deleteItem(index) {
       try {
@@ -507,7 +511,7 @@ export default {
     },
     async addTag() {
       if (!this.newTagName.trim()) {
-        this.$message.warning('请输入标签名称')
+        this.$message.warning('请入标签名称')
         return
       }
       try {
@@ -560,22 +564,27 @@ export default {
     },
     toggleSearch() {
       this.showSearch = true
-      // 等待 DOM 更新聚焦输入框
       this.$nextTick(() => {
-        this.$refs.searchInput.focus()
+        this.$refs.searchInput?.focus()
       })
     },
-    handleSearchBlur() {
-      // 当搜索框失去焦点且没有内容时，隐藏搜索框
-      if (!this.searchText) {
-        this.showSearch = false
+    handleSearchEsc() {
+      this.searchText = ''
+      this.showSearch = false
+      // 如果有卡片，选中第一个
+      if (this.filteredHistory.length > 0) {
+        this.selectedIndex = 0
+        this.$nextTick(() => {
+          this.scrollToSelectedItem()
+        })
       }
     },
     clearSearch() {
       this.searchText = ''
-      this.showSearch = false
-      // 将焦点返回到卡片容器
-      this.$refs.itemsContainer.focus()
+      // 重新聚焦搜索框
+      this.$nextTick(() => {
+        this.$refs.searchInput?.focus()
+      })
     },
     handleGlobalKeydown(event) {
       // 如果当前有输入框在焦点中，不处理快捷键
@@ -662,6 +671,25 @@ export default {
       } catch (err) {
         this.$message.error('更新标签顺序失败：' + err)
       }
+    },
+    handleSearchEnter() {
+      // 如果有搜索结果，选中第一个
+      if (this.filteredHistory.length > 0) {
+        this.selectedIndex = 0
+        this.showSearch = false  // 隐藏搜索框
+        this.$nextTick(() => {
+          // 确保滚动到选中的卡片并聚焦
+          this.scrollToSelectedItem()
+          // 将焦点转移到卡片容器
+          this.$refs.itemsContainer?.focus()
+        })
+      }
+    },
+    handleSearchInput(value) {
+      // 在输入变化时保持焦点
+      this.$nextTick(() => {
+        this.$refs.searchInput?.focus()
+      })
     }
   }
 }
