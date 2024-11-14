@@ -92,7 +92,7 @@ func (a *App) startup(ctx context.Context) {
 
 // 添加快捷键监听
 func (a *App) watchHotkey() {
-	hook.Register(hook.KeyDown, []string{"shift", "alt", "v"}, func(e hook.Event) {
+	hook.Register(hook.KeyDown, []string{"shift", "ctrl", "v"}, func(e hook.Event) {
 		runtime.EventsEmit(a.ctx, "toggleWindow")
 	})
 
