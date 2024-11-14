@@ -454,13 +454,13 @@ export default {
     },
     async deleteItem(index) {
       try {
-        const item = this.history[index]
+        const item = this.filteredHistory[index]
         await window.go.main.App.DeleteHistoryItem(item.id)
         await this.loadHistory()
         
-        if (this.history.length > 0) {
-          if (index >= this.history.length) {
-            this.selectedIndex = this.history.length - 1
+        if (this.filteredHistory.length > 0) {
+          if (index >= this.filteredHistory.length) {
+            this.selectedIndex = this.filteredHistory.length - 1
           } else {
             this.selectedIndex = index
           }
@@ -478,20 +478,18 @@ export default {
         case 'ArrowLeft':
           if (this.selectedIndex > 0) {
             this.selectedIndex--
-            // 立即执行滚动，不等待下一个 tick
             this.scrollToSelectedItem()
           }
           break
         case 'ArrowRight':
           if (this.selectedIndex < maxIndex) {
             this.selectedIndex++
-            // 立即执行滚动，不等待下一个 tick
             this.scrollToSelectedItem()
           }
           break
         case 'Enter':
           if (this.selectedIndex >= 0) {
-            this.copyContent(this.history[this.selectedIndex])
+            this.copyContent(this.filteredHistory[this.selectedIndex])
           }
           break
         case 'Delete':
