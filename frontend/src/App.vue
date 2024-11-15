@@ -12,7 +12,7 @@
           
           <!-- 添加标签栏 -->
           <div class="tags-bar">
-            <div class="tags-list">
+            <div class="tags-container">
               <div 
                 class="tag-item all-tag"
                 :class="{ active: currentTag === null }"
@@ -20,22 +20,24 @@
               >
                 全部
               </div>
-              <div
-                v-for="tag in tags"
-                :key="tag.id"
-                class="tag-item"
-                :class="{ active: currentTag === tag.id, dragging: draggingTag === tag.id }"
-                @click="currentTag = tag.id"
-                @contextmenu.prevent="showTagContextMenu($event, tag)"
-                @dragover.prevent
-                @drop.stop="handleDrop($event, tag.id)"
-                draggable="true"
-                @dragstart="handleTagDragStart($event, tag)"
-                @dragend="handleTagDragEnd"
-                @dragenter.prevent="handleTagDragEnter(tag)"
-              >
-                <div class="tag-dot" :style="{ backgroundColor: tag.color }"></div>
-                {{ tag.name }}
+              <div class="tags-list">
+                <div
+                  v-for="tag in tags"
+                  :key="tag.id"
+                  class="tag-item"
+                  :class="{ active: currentTag === tag.id, dragging: draggingTag === tag.id }"
+                  @click="currentTag = tag.id"
+                  @contextmenu.prevent="showTagContextMenu($event, tag)"
+                  @dragover.prevent
+                  @drop.stop="handleDrop($event, tag.id)"
+                  draggable="true"
+                  @dragstart="handleTagDragStart($event, tag)"
+                  @dragend="handleTagDragEnd"
+                  @dragenter.prevent="handleTagDragEnter(tag)"
+                >
+                  <div class="tag-dot" :style="{ backgroundColor: tag.color }"></div>
+                  {{ tag.name }}
+                </div>
               </div>
             </div>
             <!-- 添加搜索部分 -->
@@ -1099,6 +1101,23 @@ html, body {
   border-bottom: 1px solid var(--border-color);
   background-color: transparent;
   gap: 8px;
+  min-height: 40px;
+}
+
+.tags-container {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  align-items: center;
+  overflow: hidden;  /* 确保不会溢出 */
+}
+
+.all-tag {
+  flex-shrink: 0;  /* 防止压缩 */
+  position: sticky;  /* 固定位置 */
+  left: 0;
+  z-index: 1;  /* 确保在其他标签之上 */
+  background-color: var(--bg-color);  /* 与背景色保持一致 */
 }
 
 .tags-list {
@@ -1110,12 +1129,18 @@ html, body {
   -ms-overflow-style: none;
   padding: 4px 0;
   background-color: transparent;
-  padding-top: 1px;
-  padding-bottom: 1px;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.tags-list::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  background: transparent;
 }
 
 .tag-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   padding: 6px 12px;
   border-radius: 12px;
@@ -1128,6 +1153,8 @@ html, body {
   letter-spacing: 0.3px;
   color: var(--text-color);
   opacity: 0.8;
+  flex-shrink: 0;
+  min-width: fit-content;
 }
 
 .tag-item:hover {
@@ -1155,6 +1182,7 @@ html, body {
 }
 
 .add-tag-btn {
+  flex-shrink: 0;
   margin-left: 8px;
   color: var(--text-color);
   opacity: 0.6;
@@ -1272,6 +1300,8 @@ html, body {
 .search-container {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .search-btn {
@@ -1288,6 +1318,7 @@ html, body {
 .search-input-container {
   width: 200px;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .search-input {
