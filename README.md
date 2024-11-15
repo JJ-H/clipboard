@@ -16,6 +16,16 @@
 
 ![Smart Clipboard](doc/images/preview_light.png)
 
+### 快速体验
+前往 release 页面下载对应平台的安装包，双击即可运行。
+
+masOS 如遇到 xxx 损坏，终端执行如下指令即可
+
+```bash
+# 应用路径根据实际情况调整
+sudo xattr -rd com.apple.quarantine /Applications/Smart\ Clipboard.app
+```
+
 ## 功能特点
 
 - 🚀 快速访问剪贴板历史
